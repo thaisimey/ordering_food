@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:ordering_food/model/item.dart';
 import 'package:ordering_food/view_model/product_view_model.dart';
 import 'package:provider/provider.dart';
@@ -54,22 +56,40 @@ class _DetailViewState extends State<DetailView> {
                       )
                   ),
                 ),
-                Positioned(
-                  top: 70,
-                  left: 30,
-                  child: Container(
-                    height: 50,
-                      width: 50,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.orange
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 9.0),
-                        child: IconButton(icon: Icon(Icons.arrow_back_ios,size: 30,color: Colors.white,),onPressed: () {
-                          Navigator.pop(context);
-                        },)
-                      )),
+                Padding(
+                  padding: const EdgeInsets.only(left: 30,right: 30,top: 50),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: Colors.orange
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 9.0),
+                            child: IconButton(icon: Icon(Icons.arrow_back_ios,size: 30,color: Colors.white,),onPressed: () {
+                              Navigator.pop(context);
+                            },)
+                          )),
+                      Container(
+                          height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.transparent,
+                            border: Border.all(color: HexColor("fdd5ad")),
+                          ),
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: IconButton(icon: Icon(Icons.favorite,size: 30,color: HexColor("fdd5ad"),),onPressed: () {
+                              Navigator.pop(context);
+                            },),
+                          )),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -156,6 +176,18 @@ class _DetailViewState extends State<DetailView> {
                       child: IconButton(icon: Icon(Icons.shopping_cart,size: 30,color: Colors.greenAccent,),onPressed: () {
                         Cart temp = Cart(item, qty);
                         Provider.of<ProductViewModel>(context,listen: false).cartList.add(temp);
+                        AwesomeDialog(
+                            context: context,
+                            animType: AnimType.BOTTOMSLIDE,
+                            headerAnimationLoop: true,
+                            autoHide: Duration(milliseconds: 3000),
+                            dialogType: DialogType.SUCCES,
+                            title: 'Success',
+                            desc:
+                            'Your Cart has been added',
+                            btnOkIcon: Icons.check_circle,
+                            )
+                          ..show();
                       })),
                 ),
 

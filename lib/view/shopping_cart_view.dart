@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fdottedline/fdottedline.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:ordering_food/view_model/product_view_model.dart';
@@ -78,8 +79,8 @@ class _ShoppingCartViewState extends State<ShoppingCartView> {
                       itemCount: value.cartList.length,
                       itemBuilder: (context,position) {
                         return Container(
-                          height: 80,
-                          width: 100,
+                          // height: 80,
+                          // width: 100,
                           child: Slidable(
                             child: ListTile(
                                 leading: Container(
@@ -111,49 +112,54 @@ class _ShoppingCartViewState extends State<ShoppingCartView> {
                                     ],
                                   ),
                                 ),
-
                                 // trailing:  ComponentPro.addMinus(MainAxisAlignment.end,width:330,height: 100,pos: position,context: context,)
-                              trailing: Container(
-                                height: 100,
-                                width: 330,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Container(
-                                        height: 50,
-                                        width: 50,
-                                        decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(20),
-                                            color: Colors.white
-                                        ),
-                                        child: IconButton(icon: Icon(Icons.remove,size: 30,color: Colors.greenAccent),onPressed: () {
-                                          if(value.cartList[position].qty <= 1) {
-                                            Provider.of<ProductViewModel>(context,listen: false).removeItem(item: value.cartList[position]);
-                                          } else {
-                                            Provider.of<ProductViewModel>(
-                                                context, listen: false)
-                                                .decreaseItem(position,
-                                                value.cartList[position].qty);
-                                          }
-                                        },)),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left : 10.0,right: 10.0),
-                                      child: Text(Provider.of<ProductViewModel>(context,listen: false).cartList[position].qty.toString(),style: TextStyle(color: Colors.grey,fontSize: 22),),
-                                    ),
-                                    Container(
-                                        height: 50,
-                                        width: 50,
-                                        decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(20),
-                                            color: Colors.greenAccent
-                                        ),
-                                        child: IconButton(icon: Icon(Icons.add,size: 30,color: Colors.white),onPressed: () {
-                                          Provider.of<ProductViewModel>(context,listen: false).increaseItem(position, value.cartList[position].item.amount);
-                                        },)),
-                                  ],
+                                trailing: Container(
+                                  height: 50,
+                                  width: 140,
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                          decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(12),
+                                              color: Colors.white
+                                          ),
+                                          child: SizedBox(
+                                            width: 40,
+                                            height: 40,
+                                            child: IconButton(
+                                              alignment: Alignment.center,
+                                              icon: Icon(Icons.remove, color: Colors.greenAccent, size: 14,),onPressed: () {
+                                              if(value.cartList[position].qty <= 1) {
+                                                Provider.of<ProductViewModel>(context,listen: false).removeItem(item: value.cartList[position]);
+                                              } else {
+                                                Provider.of<ProductViewModel>(
+                                                    context, listen: false)
+                                                    .decreaseItem(position,
+                                                    value.cartList[position].qty);
+                                              }
+                                            },),
+                                          )),
+                                      Padding(
+                                        padding: const EdgeInsets.only(left : 10.0,right: 10.0),
+                                        child: Text(Provider.of<ProductViewModel>(context,listen: false).cartList[position].qty.toString(),style: TextStyle(color: Colors.grey),),
+                                      ),
+                                      Container(
+                                          decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(12),
+                                              color: Colors.greenAccent
+                                          ),
+                                          child: SizedBox(
+                                            width: 40,
+                                            height: 40,
+                                            child: IconButton(icon: Icon(Icons.add, color: Colors.white),onPressed: () {
+                                              Provider.of<ProductViewModel>(context,listen: false).increaseItem(position, value.cartList[position].item.amount);
+                                            },),
+                                          ))
+                                    ],
+                                  ),
                                 ),
-                              ),
-
                             ),
                             actionPane: SlidableDrawerActionPane(),
                             secondaryActions: [

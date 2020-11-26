@@ -16,3 +16,11 @@ class Cart {
 
   Cart(this.item, this.qty);
 }
+
+class ItemAction {
+  int id;
+  String name;
+  bool isSelect;
+
+  ItemAction(this.id, this.name, this.isSelect);
+}
