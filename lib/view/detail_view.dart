@@ -1,6 +1,8 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:ordering_food/component/component.dart';
 import 'package:ordering_food/model/item.dart';
 import 'package:ordering_food/view_model/product_view_model.dart';
 import 'package:provider/provider.dart';
@@ -8,17 +10,19 @@ import 'package:provider/provider.dart';
 class DetailView extends StatefulWidget {
 
   final Item item;
+
   const DetailView({Key key, this.item}) : super(key: key);
 
 
   @override
   _DetailViewState createState() => _DetailViewState();
 
-
 }
 
 class _DetailViewState extends State<DetailView> {
 
+  StreamController<int> _streamController = StreamController();
+  int qty = 1;
   Item item;
   @override
   void initState() {
@@ -28,6 +32,8 @@ class _DetailViewState extends State<DetailView> {
   }
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -148,14 +154,55 @@ class _DetailViewState extends State<DetailView> {
                           color: Colors.white
                       ),
                       child: IconButton(icon: Icon(Icons.shopping_cart,size: 30,color: Colors.greenAccent,),onPressed: () {
-                        // Provider.of<ProductViewModel>(context,listen: false).cartList(item)
+                        Cart temp = Cart(item, qty);
+                        Provider.of<ProductViewModel>(context,listen: false).cartList.add(temp);
                       })),
                 ),
 
               ],
             ),
             SizedBox(height: 10,),
-            ComponentPro.addMinus(MainAxisAlignment.center,item: item),
+            // ComponentPro.addMinus(MainAxisAlignment.center,context: context,item: item),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.white
+                    ),
+                    child: IconButton(icon: Icon(Icons.remove,size: 30,color: Colors.greenAccent),onPressed: () {
+                      _streamController.add(
+                          (qty <= 1) ? qty==1 : qty -=1
+                       );
+                    },)),
+                StreamBuilder<int>(
+                  stream: _streamController.stream,
+                  builder: (context, snapshot) {
+                    int temp = snapshot.data == null ? qty: snapshot.data;
+                    return Padding(
+                      padding: const EdgeInsets.only(left : 10.0,right: 10.0),
+                      child: Text(temp.toString(), style: TextStyle(color: Colors.grey,fontSize: 22),),
+                    );
+                  }
+                ),
+                Container(
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.greenAccent
+                    ),
+                    child: IconButton(icon: Icon(Icons.add,size: 30,color: Colors.white),onPressed: () {
+                      qty += 1;
+                      _streamController.add(qty);
+                    },),),
+
+
+              ],
+            ),
 
           ],
         ),

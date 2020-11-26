@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:ordering_food/view/detail_view.dart';
 import 'package:ordering_food/view/product_items_view.dart';
@@ -10,6 +11,7 @@ void main() {
       MultiProvider(
         providers: [
           ChangeNotifierProvider.value(value: ProductViewModel()),
+          StreamProvider.value(value: Connectivity().onConnectivityChanged),
         ],
         child: MyApp(),
       ),

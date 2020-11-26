@@ -4,29 +4,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:ordering_food/component/component.dart';
-import 'package:ordering_food/model/item.dart';
 import 'package:ordering_food/view_model/product_view_model.dart';
 import 'package:provider/provider.dart';
 
 class ShoppingCartView extends StatefulWidget {
+
   @override
   _ShoppingCartViewState createState() => _ShoppingCartViewState();
 }
 
 class _ShoppingCartViewState extends State<ShoppingCartView> {
-
-  List<Item> listFood = [
-    Item(1,"Hot Tonu","https://www.foodiesfeed.com/wp-content/uploads/2019/06/top-view-for-box-of-2-burgers-home-made-413x619.jpg",12,3),
-    Item(2,"Hot Tonu","https://www.foodiesfeed.com/wp-content/uploads/2018/12/green-salad-with-hemp-seeds.jpg",12,3),
-    Item(3,"Hot Tonu","https://www.foodiesfeed.com/wp-content/uploads/2017/07/fancy-dinner-with-seafood-pasta-and-crayfish-413x620.jpg",12,3),
-    Item(4,"Hot Tonu","https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-king-prawns-413x516.jpg",12,3),
-    Item(5,"Hot Tonu","https://www.foodiesfeed.com/wp-content/uploads/2019/01/seafood-noodles-413x620.jpg",12,3),
-    Item(6,"Hot Tonu","https://www.foodiesfeed.com/wp-content/uploads/2020/08/muscles-413x551.jpg",12,3),
-    Item(7,"Hot Tonu","https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-fried-rice-413x330.jpg",12,3),
-    Item(8,"Hot Tonu","https://www.foodiesfeed.com/wp-content/uploads/2019/04/girl-pouring-hot-sauce-on-her-vietnamese-food-413x620.jpg",12,3),
-    Item(9,"Hot Tonu","https://www.foodiesfeed.com/wp-content/uploads/2017/08/almejas-en-salsa-413x622.jpg",12,3),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +86,7 @@ class _ShoppingCartViewState extends State<ShoppingCartView> {
                                   height: 160,
                                   width: 60,
                                   child: CachedNetworkImage(
-                                      imageUrl: "${value.cartList[position].image}",
+                                      imageUrl: "${value.cartList[position].item.image}",
                                       imageBuilder: (context, imageProvider) => Container(
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(20),
@@ -111,21 +98,61 @@ class _ShoppingCartViewState extends State<ShoppingCartView> {
                                 ),
                                 title: Padding(
                                   padding: const EdgeInsets.only(left: 8.0),
-                                  child: Text(value.cartList[position].name,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17),),
+                                  child: Text(value.cartList[position].item.name,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17),),
                                 ),
                                 subtitle: Padding(
                                   padding: const EdgeInsets.only(left: 8.0),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(value.cartList[position].name),
+                                      Text(value.cartList[position].item.name),
                                       SizedBox(height: 12,),
-                                      Text("\$ ${value.cartList[position].price.toString()}",style: TextStyle(fontWeight: FontWeight.bold),),
+                                      Text("\$ ${value.cartList[position].item.price.toString()}",style: TextStyle(fontWeight: FontWeight.bold),),
                                     ],
                                   ),
                                 ),
 
-                                trailing:  ComponentPro.addMinus(MainAxisAlignment.end,width:330,height: 100,pos: position)
+                                // trailing:  ComponentPro.addMinus(MainAxisAlignment.end,width:330,height: 100,pos: position,context: context,)
+                              trailing: Container(
+                                height: 100,
+                                width: 330,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Container(
+                                        height: 50,
+                                        width: 50,
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(20),
+                                            color: Colors.white
+                                        ),
+                                        child: IconButton(icon: Icon(Icons.remove,size: 30,color: Colors.greenAccent),onPressed: () {
+                                          if(value.cartList[position].qty <= 1) {
+                                            Provider.of<ProductViewModel>(context,listen: false).removeItem(item: value.cartList[position]);
+                                          } else {
+                                            Provider.of<ProductViewModel>(
+                                                context, listen: false)
+                                                .decreaseItem(position,
+                                                value.cartList[position].qty);
+                                          }
+                                        },)),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left : 10.0,right: 10.0),
+                                      child: Text(Provider.of<ProductViewModel>(context,listen: false).cartList[position].qty.toString(),style: TextStyle(color: Colors.grey,fontSize: 22),),
+                                    ),
+                                    Container(
+                                        height: 50,
+                                        width: 50,
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(20),
+                                            color: Colors.greenAccent
+                                        ),
+                                        child: IconButton(icon: Icon(Icons.add,size: 30,color: Colors.white),onPressed: () {
+                                          Provider.of<ProductViewModel>(context,listen: false).increaseItem(position, value.cartList[position].item.amount);
+                                        },)),
+                                  ],
+                                ),
+                              ),
 
                             ),
                             actionPane: SlidableDrawerActionPane(),
@@ -159,7 +186,7 @@ class _ShoppingCartViewState extends State<ShoppingCartView> {
                     Text("Discount",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
                     Icon(Icons.face),
                     Spacer(),
-                    Text("\$ 20"),
+                    Text("\$ 0"),
                   ],
                 ),
               ),
@@ -170,7 +197,12 @@ class _ShoppingCartViewState extends State<ShoppingCartView> {
                     Text("Total",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 21),),
                     Icon(Icons.face),
                     Spacer(),
-                    Text("\$ 81",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 23)),
+                    Selector<ProductViewModel, double>(
+                      selector: (context,viewModel) => viewModel.total(),
+                      builder: (__, value, ___) {
+                        return Text("\$ ${value.toString()}",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 23));
+                      },
+                    ),
                   ],
                 ),
               ),

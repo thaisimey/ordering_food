@@ -14,11 +14,12 @@ List<Item> get list1 => _list1;
     notifyListeners();
   }
 
-  List<Item> _cartList = List();
+  List<Cart> _cartList = List();
 
-List<Item> get cartList => _cartList;
 
-  set cartList(List<Item> value) {
+List<Cart> get cartList => _cartList;
+
+  set cartList(List<Cart> value) {
     _cartList = value;
     notifyListeners();
   }
@@ -30,21 +31,31 @@ List<Item> get cartList => _cartList;
     notifyListeners();
   }
 
-void removeItem({Item item}) {
-  print('removed from cartItem: ${item.id} - ${item.name}');
+void removeItem({Cart item}) {
+  // print('removed from cartItem: ${item.id} - ${item.name}');
   cartList.remove(item);
   notifyListeners();
 }
 
-void increaseItem(int index, double value) {
-  _cartList[index].amount++;
-  // cartList[index].amount = value;
+void increaseItem(int index, int value) {
+  _cartList[index].qty++;
   notifyListeners();
 }
 
-void decreaseItem(int index, double value) {
-  _cartList[index].amount--;
+void decreaseItem(int index, int value) {
+  _cartList[index].qty--;
   notifyListeners();
+}
+
+double total() {
+  double eachtotal = 0;
+  double total = 0;
+  cartList.forEach((element) {
+    eachtotal = element.qty * element.item.price;
+    total += eachtotal;
+  });
+
+  return total;
 }
 
 

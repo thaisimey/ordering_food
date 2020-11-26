@@ -1,5 +1,8 @@
+import 'dart:async';
+import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chips_choice/chips_choice.dart';
+import 'package:connectivity/connectivity.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:ordering_food/model/item.dart';
 import 'package:ordering_food/view/detail_view.dart';
@@ -16,6 +19,8 @@ class ProductItemsView extends StatefulWidget {
 
 class _ProductItemsViewState extends State<ProductItemsView> {
 
+  var _controller = TextEditingController();
+
   List<String> options = [
     'News', 'Entertainment', 'Politics',
     'Automotive', 'Sports', 'Education',
@@ -23,22 +28,28 @@ class _ProductItemsViewState extends State<ProductItemsView> {
     'Science',
   ];
 
+  StreamSubscription subscription;
 
-  List<Item> listFood = [
-    Item(1,"Hot Tonu","https://www.foodiesfeed.com/wp-content/uploads/2019/06/top-view-for-box-of-2-burgers-home-made-413x619.jpg",12,3),
-    Item(2,"Hot Tonu","https://www.foodiesfeed.com/wp-content/uploads/2018/12/green-salad-with-hemp-seeds.jpg",12,3),
-    Item(3,"Hot Tonu","https://www.foodiesfeed.com/wp-content/uploads/2017/07/fancy-dinner-with-seafood-pasta-and-crayfish-413x620.jpg",12,3),
-    Item(4,"Hot Tonu","https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-king-prawns-413x516.jpg",12,3),
-    Item(5,"Hot Tonu","https://www.foodiesfeed.com/wp-content/uploads/2019/01/seafood-noodles-413x620.jpg",12,3),
-    Item(6,"Hot Tonu","https://www.foodiesfeed.com/wp-content/uploads/2020/08/muscles-413x551.jpg",12,3),
-    Item(7,"Hot Tonu","https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-fried-rice-413x330.jpg",12,3),
-    Item(8,"Hot Tonu","https://www.foodiesfeed.com/wp-content/uploads/2019/04/girl-pouring-hot-sauce-on-her-vietnamese-food-413x620.jpg",12,3),
-    Item(9,"Hot Tonu","https://www.foodiesfeed.com/wp-content/uploads/2017/08/almejas-en-salsa-413x622.jpg",12,3),
-  ];
+
 
   @override
   void initState() {
-    // TODO: implement initState
+    subscription = Connectivity().onConnectivityChanged.listen((result) {
+      print("result ${result}");
+      if(result  == ConnectivityResult.none) {
+                  return Flushbar(
+                    flushbarPosition: FlushbarPosition.BOTTOM ,
+                    message: "no internet",
+                    icon: Icon(
+                      Icons.info_outline,
+                      size: 28.0,
+                      color: Colors.blue[300],
+                    ),
+                    duration: Duration(seconds: 6),
+                    leftBarIndicatorColor: Colors.blue[300],
+                  )..show(context);
+      }
+    });
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Provider.of<ProductViewModel>(context, listen: false).getData();
@@ -54,34 +65,74 @@ class _ProductItemsViewState extends State<ProductItemsView> {
               SizedBox(
                 height: 5,
               ),
-              Row(
+              Stack(
                 children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 5),
-                      child: TextField(
-                        decoration: InputDecoration(
-                          hintText: "SeaFood",
-                          prefixIcon: Icon(Icons.search),
-                          fillColor: Colors.black12,
-                          filled: true,
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
-                            borderRadius: BorderRadius.all(Radius.circular(20.0)),
+
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 5),
+                          child: TextField(
+                            controller: _controller,
+                            decoration: InputDecoration(
+                              hintText: "SeaFood",
+                              prefixIcon: Icon(Icons.search),
+                              fillColor: Colors.black12,
+                              filled: true,
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                              ),
+                              border: InputBorder.none,
+                              suffixIcon: IconButton(
+                                onPressed: () => _controller.clear(),
+                                icon: Icon(Icons.clear),
+                              ),
+                            ),
                           ),
-                          border: InputBorder.none,
+
                         ),
                       ),
-                    ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 5,right: 5),
+                        child: CircleAvatar(
+                          radius: 30,
+                            child: IconButton(icon: Icon(Icons.shopping_cart,size: 30,),onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ShoppingCartView()));
+                            })),
+                      )
+                    ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 5,right: 5),
-                    child: CircleAvatar(
-                      radius: 30,
-                        child: IconButton(icon: Icon(Icons.shopping_cart,size: 30,),onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ShoppingCartView()));
-                        })),
-                  )
+
+                  // Positioned(
+                  //   bottom: 0,
+                  //   child: Selector<ConnectivityResult, bool>(
+                  //       selector: (context, connectivity) => connectivity != ConnectivityResult.none,
+                  //       builder: (_, value, ___) {
+                  //         print("connectivity $value");
+                  //         if(value == false) {
+                  //           return Flushbar(
+                  //             flushbarPosition: FlushbarPosition.BOTTOM ,
+                  //             message: "no internet",
+                  //             icon: Icon(
+                  //               Icons.info_outline,
+                  //               size: 28.0,
+                  //               color: Colors.blue[300],
+                  //             ),
+                  //             duration: Duration(seconds: 3),
+                  //             leftBarIndicatorColor: Colors.blue[300],
+                  //           )..show(context);
+                  //         } else {
+                  //           return SizedBox.shrink();
+                  //         }
+                  //       }
+                  //   ),
+                  // ),
                 ],
               ),
               Container(
@@ -146,7 +197,6 @@ class _ProductItemsViewState extends State<ProductItemsView> {
                                                 image: imageProvider, fit: BoxFit.cover),
                                           ),
                                         )
-
                                     ),
                                   ),
                                 ),
