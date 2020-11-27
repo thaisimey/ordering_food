@@ -34,7 +34,14 @@ List<Cart> get cartList => _cartList;
 void removeItem({Cart item}) {
   // print('removed from cartItem: ${item.id} - ${item.name}');
   cartList.remove(item);
+  count();
   notifyListeners();
+}
+
+void addItem({Cart item}) {
+    cartList.add(item);
+    count();
+    notifyListeners();
 }
 
 void increaseItem(int index, int value) {
@@ -47,6 +54,13 @@ void decreaseItem(int index, int value) {
   notifyListeners();
 }
 
+int count() {
+  List<Cart> temp = cartList.toList();
+  print("count : ${temp.length}");
+  return temp.length;
+
+}
+
 double total() {
   double eachtotal = 0;
   double total = 0;
@@ -57,6 +71,7 @@ double total() {
 
   return total;
 }
+
 
 
   void getData() {

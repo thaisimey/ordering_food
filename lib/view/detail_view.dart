@@ -8,6 +8,7 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:ordering_food/model/item.dart';
 import 'package:ordering_food/view_model/product_view_model.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailView extends StatefulWidget {
 
@@ -175,7 +176,7 @@ class _DetailViewState extends State<DetailView> {
                       ),
                       child: IconButton(icon: Icon(Icons.shopping_cart,size: 30,color: Colors.greenAccent,),onPressed: () {
                         Cart temp = Cart(item, qty);
-                        Provider.of<ProductViewModel>(context,listen: false).cartList.add(temp);
+                        Provider.of<ProductViewModel>(context,listen: false).addItem(item: temp);
                         AwesomeDialog(
                             context: context,
                             animType: AnimType.BOTTOMSLIDE,
@@ -188,6 +189,7 @@ class _DetailViewState extends State<DetailView> {
                             btnOkIcon: Icons.check_circle,
                             )
                           ..show();
+
                       })),
                 ),
 

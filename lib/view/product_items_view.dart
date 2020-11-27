@@ -10,6 +10,7 @@ import 'package:ordering_food/view/recommend_view.dart';
 import 'package:ordering_food/view/shopping_cart_view.dart';
 import 'package:ordering_food/view_model/product_view_model.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 
 class ProductItemsView extends StatefulWidget {
@@ -39,6 +40,7 @@ class _ProductItemsViewState extends State<ProductItemsView> {
 
   StreamSubscription subscription;
 
+
   @override
   void initState() {
     subscription = Connectivity().onConnectivityChanged.listen((result) {
@@ -61,6 +63,7 @@ class _ProductItemsViewState extends State<ProductItemsView> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Provider.of<ProductViewModel>(context, listen: false).getData();
     });
+
   }
 
   @override
@@ -316,20 +319,52 @@ class MyCustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             Padding(
               padding: const EdgeInsets.only(left: 5, right: 5),
-              child: CircleAvatar(
-                  radius: 30,
-                  child: IconButton(
-                      icon: Icon(
-                        Icons.shopping_cart,
-                        size: 30,
+              child: Stack(
+                children: [
+                  CircleAvatar(
+                      radius: 30,
+                      child: IconButton(
+                          icon: Icon(
+                            Icons.shopping_cart,
+                            size: 30,
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        ShoppingCartView()));
+                          })),
+                  (Provider.of<ProductViewModel>(context,listen: true).count() > 0) ? Padding(
+                    padding: const EdgeInsets.only(left: 40),
+                    child: Container(
+                      height: 20,
+                      width: 20,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          color: Colors.red
+
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    ShoppingCartView()));
-                      })),
+                      child: Consumer<ProductViewModel>(
+                        builder: (BuildContext context, value, Widget child) {
+                          return Align(
+                                      alignment: Alignment.center,
+                                      child: Text(value.count().toString()));
+                        } ,),
+                      // child: Selector<ProductViewModel, int>(
+                      //   selector: (context,viewModel) => viewModel.count(),
+                      //   builder: (__, value, ___) {
+                      //     return Align(
+                      //         alignment: Alignment.center,
+                      //         child: Text(value.toString()));
+                      //
+                      //   },
+                      //
+                      // ),
+                    ),
+                  ) : SizedBox.shrink(),
+                ],
+              ),
             )
           ],
         ),
